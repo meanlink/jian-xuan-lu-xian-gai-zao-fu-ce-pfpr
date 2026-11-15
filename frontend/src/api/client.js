@@ -9,3 +9,8 @@ export async function download(id,format){
  if(!r.ok)throw new Error('下载失败，请重试');
  const u=URL.createObjectURL(await r.blob()),a=document.createElement('a');a.href=u;a.download='分析归档-'+id+'.'+format;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
 }
+export async function exportBundle(jobIds){
+ const r=await fetch('/api/migrations/export',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.token},body:JSON.stringify({job_ids:jobIds})});
+ if(!r.ok){let d=await r.json().catch(()=>({detail:'导出失败，请重试'}));throw new Error(typeof d.detail==='string'?d.detail:JSON.stringify(d.detail));}
+ const u=URL.createObjectURL(await r.blob()),a=document.createElement('a');a.href=u;a.download='迁移包-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+}

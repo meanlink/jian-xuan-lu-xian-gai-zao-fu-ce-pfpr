@@ -10,6 +10,7 @@ class Report(Base):
     interval_seconds: Mapped[int]
     next_run: Mapped[float] = mapped_column(Double)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    migration_id: Mapped[int | None] = mapped_column(ForeignKey('migrations.id'), nullable=True)
 class Delivery(Base):
     __tablename__ = 'deliveries'
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -18,3 +19,4 @@ class Delivery(Base):
     checksum: Mapped[str] = mapped_column(String(64))
     filename: Mapped[str] = mapped_column(String(160))
     destination: Mapped[str] = mapped_column(String(120))
+    migration_id: Mapped[int | None] = mapped_column(ForeignKey('migrations.id'), nullable=True)

@@ -1,11 +1,13 @@
 import time
 from fastapi import HTTPException
 from redis import Redis
+from sqlalchemy import select
 from src.config.settings import REDIS_URL
 from src.models import Dataset, Job
 from src.services.business import metadata
+from src.utils.visibility import published
 def create(db, data, user):
-    if not db.get(Dataset,data.dataset_id): raise HTTPException(404,'数据批次不存在')
+    if not db.scalar(select(Dataset).where(Dataset.id==data.dataset_id,published(Dataset))): raise HTTPException(404,'数据批次不存在')
     allowed={p['key']:p for p in metadata().get('parameters',[])}
     if set(data.params)-set(allowed): raise HTTPException(422,'包含未知分析参数')
     params={k:p['default'] for k,p in allowed.items()}
